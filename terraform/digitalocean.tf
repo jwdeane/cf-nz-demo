@@ -4,10 +4,6 @@ locals {
   cfips = concat(data.cloudflare_ip_ranges.cfips.ipv4_cidr_blocks, data.cloudflare_ip_ranges.cfips.ipv6_cidr_blocks)
 }
 
-resource "digitalocean_reserved_ip" "syd1" {
-  region = "syd1"
-}
-
 resource "digitalocean_firewall" "ssh" {
   name = var.do_ssh_firewall_name
 
@@ -44,10 +40,6 @@ resource "digitalocean_firewall" "cfips" {
     port_range            = "1-65535"
     destination_addresses = ["0.0.0.0/0", "::/0"]
   }
-}
-
-output "reserved_ip" {
-  value = digitalocean_reserved_ip.syd1.ip_address
 }
 
 #-----------------------------------------------------------
@@ -97,11 +89,6 @@ resource "digitalocean_droplet" "this" {
   })
   ssh_keys = [data.digitalocean_ssh_key.this.id]
   tags     = ["nz-demo"]
-}
-
-resource "digitalocean_reserved_ip_assignment" "this" {
-  ip_address = digitalocean_reserved_ip.syd1.ip_address
-  droplet_id = digitalocean_droplet.this.id
 }
 
 # Origin Certificate
