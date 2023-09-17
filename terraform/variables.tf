@@ -65,3 +65,28 @@ variable "pages_root_dir" {
 variable "pages_destination_dir" {
   default = "_site"
 }
+#-----------------------------------------------------------
+# 5-zt
+#-----------------------------------------------------------
+variable "block_page_logo_url" {
+  default = "https://r2.jwdn.cc/jp-nedry.gif"
+}
+variable "tunnel_name_zt" {
+  default = "warp-to-tunnel"
+}
+variable "droplet_name_zt" {
+  default = "5-zt"
+}
+variable "MYSQL_ROOT_PASSWORD" {
+  sensitive = true
+}
+variable "MYSQL_PASSWORD" {
+  sensitive = true
+}
+variable "MYSQL_USER" {}
+variable "NETWORK_A_CIDR" {
+  default = "10.1.0.0/20"
+}
+variable "WP_INTERNAL_IP" {
+  default = "10.1.1.10"
+}

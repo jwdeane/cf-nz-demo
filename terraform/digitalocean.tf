@@ -127,3 +127,31 @@ resource "digitalocean_droplet" "tunnel" {
   ssh_keys = [data.digitalocean_ssh_key.this.id]
   tags     = ["nz-demo"]
 }
+
+#-----------------------------------------------------------
+# 5-zt
+#-----------------------------------------------------------
+locals {
+  warp_composeb64 = base64encode(templatefile("zt-docker-compose.yaml", {
+    TUNNEL_TOKEN        = cloudflare_tunnel.warp.tunnel_token
+    MYSQL_ROOT_PASSWORD = var.MYSQL_ROOT_PASSWORD
+    MYSQL_USER          = var.MYSQL_USER
+    MYSQL_PASSWORD      = var.MYSQL_PASSWORD
+    NETWORK_A_CIDR      = var.NETWORK_A_CIDR
+    WP_INTERNAL_IP      = var.WP_INTERNAL_IP
+  }))
+}
+
+resource "digitalocean_droplet" "warp_to_tunnel" {
+  depends_on = [cloudflare_tunnel.warp]
+  name       = var.droplet_name_zt
+  image      = var.digitalocean_image
+  region     = var.digitalocean_region
+  size       = var.digitalocean_size
+  monitoring = true
+  user_data = templatefile("zt-cloud-config.yaml.tpl", {
+    COMPOSE = local.warp_composeb64
+  })
+  ssh_keys = [data.digitalocean_ssh_key.this.id]
+  tags     = ["nz-demo"]
+}

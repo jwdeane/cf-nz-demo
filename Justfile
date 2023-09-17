@@ -40,6 +40,9 @@ show-zone zone_id:
 # Terraform
 #-----------------------------------------------------------
 
+set-tfvars:
+    op inject -i terraform/terraform.tfvars.example -o terraform/terraform.tfvars
+
 tf-init *args:
     terraform -chdir=terraform init {{ args }}
 
@@ -135,3 +138,13 @@ blog-preview:
 
 blog-preview-tunnel:
     cloudflared tunnel --url http://localhost:8080
+
+#-----------------------------------------------------------
+# 5-zt
+#-----------------------------------------------------------
+
+test-dns-block name="malware.testcategory.com":
+    dog {{ name }}
+
+test-dlp:
+    https https://httpbin.cflr.one/post secret=badger

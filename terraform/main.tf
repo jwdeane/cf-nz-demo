@@ -51,3 +51,53 @@ resource "cloudflare_logpull_retention" "this" {
   zone_id = data.cloudflare_zone.this.zone_id
   enabled = true
 }
+
+#-----------------------------------------------------------
+# 5-zt
+#-----------------------------------------------------------
+resource "cloudflare_teams_account" "cflr" {
+  account_id           = var.cloudflare_account_id
+  tls_decrypt_enabled  = true
+  activity_log_enabled = true
+
+  antivirus {
+    enabled_download_phase = true
+    enabled_upload_phase   = false
+    fail_closed            = true
+  }
+
+  proxy {
+    tcp     = true
+    udp     = true
+    root_ca = true
+  }
+
+  url_browser_isolation_enabled = true
+
+  logging {
+    redact_pii = true
+    settings_by_rule_type {
+      dns {
+        log_all    = false
+        log_blocks = true
+      }
+      http {
+        log_all    = true
+        log_blocks = true
+      }
+      l4 {
+        log_all    = false
+        log_blocks = true
+      }
+    }
+  }
+
+  block_page {
+    background_color = "#000000"
+    enabled          = true
+    footer_text      = "Mistakes were made, let's not mention this again."
+    header_text      = "BLOCKED"
+    logo_path        = var.block_page_logo_url
+    name             = "cflr"
+  }
+}
