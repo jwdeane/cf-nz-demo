@@ -127,19 +127,6 @@ lockdown-ingress name="2-tunnel":
     doctl compute firewall add-droplets $SSH_FIREWALL_ID --droplet-ids $DROPLET_ID
 
 #-----------------------------------------------------------
-# 3-pages
-# -----------------------------------------------------------
-
-blog-init:
-    cd blog && npm install
-
-blog-preview:
-    cd blog && npx @11ty/eleventy --serve
-
-blog-preview-tunnel:
-    cloudflared tunnel --url http://localhost:8080
-
-#-----------------------------------------------------------
 # 5-zt
 #-----------------------------------------------------------
 
