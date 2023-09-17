@@ -49,3 +49,78 @@ resource "digitalocean_firewall" "cfips" {
 output "reserved_ip" {
   value = digitalocean_reserved_ip.syd1.ip_address
 }
+
+#-----------------------------------------------------------
+# 1-certificates
+#-----------------------------------------------------------
+
+data "digitalocean_ssh_key" "this" {
+  name = var.digitalocean_ssh_key_name
+}
+
+locals {
+  caddyb64   = base64encode(file("Caddyfile"))
+  composeb64 = base64encode(file("docker-compose.yaml"))
+  cert       = base64encode(cloudflare_origin_ca_certificate.origin.certificate)
+  key        = base64encode(tls_private_key.cflr.private_key_pem)
+}
+
+# proxied with origin certificate
+resource "cloudflare_record" "httpbin" {
+  zone_id = data.cloudflare_zone.this.zone_id
+  name    = "httpbin"
+  value   = digitalocean_droplet.this.ipv4_address
+  type    = "A"
+  proxied = true
+}
+
+# unproxied - direct to origin
+resource "cloudflare_record" "httpbin-direct" {
+  zone_id = data.cloudflare_zone.this.zone_id
+  name    = "httpbin-direct"
+  value   = digitalocean_droplet.this.ipv4_address
+  type    = "A"
+  proxied = false
+}
+
+resource "digitalocean_droplet" "this" {
+  name       = var.droplet_name
+  image      = var.digitalocean_image
+  region     = var.digitalocean_region
+  size       = var.digitalocean_size
+  monitoring = true
+  user_data = templatefile("cloud-config.yaml.tpl", {
+    CADDYFILE = local.caddyb64
+    COMPOSE   = local.composeb64
+    CERT      = local.cert
+    KEY       = local.key
+  })
+  ssh_keys = [data.digitalocean_ssh_key.this.id]
+  tags     = ["nz-demo"]
+}
+
+resource "digitalocean_reserved_ip_assignment" "this" {
+  ip_address = digitalocean_reserved_ip.syd1.ip_address
+  droplet_id = digitalocean_droplet.this.id
+}
+
+# Origin Certificate
+resource "tls_private_key" "cflr" {
+  algorithm   = "ECDSA"
+  ecdsa_curve = "P256"
+}
+
+resource "tls_cert_request" "cflr" {
+  private_key_pem = tls_private_key.cflr.private_key_pem
+}
+
+resource "cloudflare_origin_ca_certificate" "origin" {
+  csr                = tls_cert_request.cflr.cert_request_pem
+  hostnames          = ["httpbin.${var.cloudflare_zone}"]
+  request_type       = "origin-ecc"
+  requested_validity = 5475
+}
+
+output "ipv4" {
+  value = digitalocean_droplet.this.ipv4_address
+}

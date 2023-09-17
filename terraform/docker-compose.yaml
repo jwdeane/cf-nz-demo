@@ -1,0 +1,42 @@
+version: '3'
+
+services:
+  caddy:
+    container_name: caddy
+    image: caddy
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - $PWD/Caddyfile:/etc/caddy/Caddyfile
+      - $PWD/cert.pem:/etc/caddy/cert.pem
+      - $PWD/key.pem:/etc/caddy/key.pem
+      - caddy_data:/data
+      - caddy_config:/config
+    networks:
+      - dc1
+
+  httpbin:
+    container_name: httpbin
+    image: kong/httpbin
+    restart: always
+    ports:
+      - "8000:80"
+    networks:
+      - dc1
+
+volumes:
+  caddy_data:
+  caddy_config:
+
+networks:
+  dc1:
+    name: dc1
+    ipam:
+      config:
+        - subnet: 10.0.0.0/20
+          ip_range: 10.1.0.0/24
+
+# do default 10.126.0.0/20
