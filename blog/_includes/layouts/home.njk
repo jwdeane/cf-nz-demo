@@ -1,0 +1,11 @@
+---
+layout: layouts/base.njk
+---
+<!-- Delete this message, it will also remove the component CSS from the bundle -->
+{%- css %}{% include "public/css/message-box.css" %}{% endcss %}
+<div class="message-box">
+	<p>A simple blog to demo <a href="https://pages.cloudflare.com">Cloudflare Pages</a>.</p>
+</div>
+<!-- Stop deleting -->
+
+{{ content | safe }}

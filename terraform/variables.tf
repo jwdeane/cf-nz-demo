@@ -43,3 +43,25 @@ variable "droplet_name" {
 variable "droplet_name_tunnel" {
   default = "2-tunnel"
 }
+
+#-----------------------------------------------------------
+# 3-pages
+#-----------------------------------------------------------
+variable "pages_subdomain" {
+  default = "pages"
+}
+variable "pages_project_name" {
+  default = "nz-pages-demo"
+}
+variable "pages_repo_owner" {
+  default = "25thhour"
+}
+variable "pages_repo_name" {
+  default = "cf-nz-demo"
+}
+variable "pages_root_dir" {
+  default = "blog"
+}
+variable "pages_destination_dir" {
+  default = "_site"
+}

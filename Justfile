@@ -64,6 +64,7 @@ tf-destroy:
 #-----------------------------------------------------------
 # 1-certificates
 #-----------------------------------------------------------
+
 # get droplet IPv4 address
 ip name="1-certificates":
     doctl compute droplet get {{ name }} -o json | jq -r '.[].networks.v4[0].ip_address'
@@ -109,7 +110,8 @@ sslscan-tunnel host="httpbin-tunnel.cflr.one":
 
 #-----------------------------------------------------------
 # 2-tunnel
-#-----------------------------------------------------------
+# -----------------------------------------------------------
+
 lockdown-ingress name="2-tunnel":
     #!/usr/bin/env bash
     set -euo pipefail
@@ -120,3 +122,16 @@ lockdown-ingress name="2-tunnel":
 
     echo "Adding droplets to firewall(s)."
     doctl compute firewall add-droplets $SSH_FIREWALL_ID --droplet-ids $DROPLET_ID
+
+#-----------------------------------------------------------
+# 3-pages
+# -----------------------------------------------------------
+
+blog-init:
+    cd blog && npm install
+
+blog-preview:
+    cd blog && npx @11ty/eleventy --serve
+
+blog-preview-tunnel:
+    cloudflared tunnel --url http://localhost:8080
