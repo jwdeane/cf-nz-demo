@@ -7,6 +7,12 @@ variable "cloudflare_account_id" {
 variable "cloudflare_zone" {
   default = "cflr.one"
 }
+variable "tunnel_name" {
+  default = "nz-demo"
+}
+variable "tunnel_hostname" {
+  default = "httpbin-tunnel"
+}
 
 #-----------------------------------------------------------
 # Digital Ocean
@@ -33,4 +39,7 @@ variable "digitalocean_size" {
 }
 variable "droplet_name" {
   default = "1-certificates"
+}
+variable "droplet_name_tunnel" {
+  default = "2-tunnel"
 }

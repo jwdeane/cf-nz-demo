@@ -5,7 +5,8 @@ locals {
 }
 
 resource "digitalocean_firewall" "ssh" {
-  name = var.do_ssh_firewall_name
+  name        = var.do_ssh_firewall_name
+  droplet_ids = [digitalocean_droplet.this.id, digitalocean_droplet.tunnel.id]
 
   inbound_rule {
     protocol         = "tcp"
@@ -21,7 +22,8 @@ resource "digitalocean_firewall" "ssh" {
 }
 
 resource "digitalocean_firewall" "cfips" {
-  name = var.do_cloudflare_firewall_name
+  name        = var.do_cloudflare_firewall_name
+  droplet_ids = [digitalocean_droplet.this.id]
 
   inbound_rule {
     protocol         = "tcp"
@@ -43,7 +45,7 @@ resource "digitalocean_firewall" "cfips" {
 }
 
 #-----------------------------------------------------------
-# 1-certificates
+# 1-certificates and 2-tunnel
 #-----------------------------------------------------------
 
 data "digitalocean_ssh_key" "this" {
@@ -55,6 +57,9 @@ locals {
   composeb64 = base64encode(file("docker-compose.yaml"))
   cert       = base64encode(cloudflare_origin_ca_certificate.origin.certificate)
   key        = base64encode(tls_private_key.cflr.private_key_pem)
+  tunnel_composeb64 = base64encode(templatefile("tunnel-compose.yaml", {
+    TUNNEL_TOKEN = cloudflare_tunnel.this.tunnel_token
+  }))
 }
 
 # proxied with origin certificate
@@ -108,6 +113,17 @@ resource "cloudflare_origin_ca_certificate" "origin" {
   requested_validity = 5475
 }
 
-output "ipv4" {
-  value = digitalocean_droplet.this.ipv4_address
+# egress only via tunnel
+resource "digitalocean_droplet" "tunnel" {
+  depends_on = [cloudflare_tunnel.this]
+  name       = var.droplet_name_tunnel
+  image      = var.digitalocean_image
+  region     = var.digitalocean_region
+  size       = var.digitalocean_size
+  monitoring = true
+  user_data = templatefile("tunnel-cloud-config.yaml.tpl", {
+    COMPOSE = local.tunnel_composeb64
+  })
+  ssh_keys = [data.digitalocean_ssh_key.this.id]
+  tags     = ["nz-demo"]
 }

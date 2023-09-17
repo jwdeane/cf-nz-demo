@@ -64,13 +64,11 @@ tf-destroy:
 #-----------------------------------------------------------
 # 1-certificates
 #-----------------------------------------------------------
-droplet_name := "1-certificates"
-
 # get droplet IPv4 address
-ip name=droplet_name:
+ip name="1-certificates":
     doctl compute droplet get {{ name }} -o json | jq -r '.[].networks.v4[0].ip_address'
 
-add-cfip-firewall name=droplet_name:
+add-cfip-firewall name="1-certificates":
     #!/usr/bin/env bash
     set -euo pipefail
 
@@ -83,7 +81,7 @@ add-cfip-firewall name=droplet_name:
     doctl compute firewall add-droplets $SSH_FIREWALL_ID --droplet-ids $DROPLET_ID
     doctl compute firewall add-droplets $CLOUDFLARE_FIREWALL_ID --droplet-ids $DROPLET_ID
 
-remove-firewalls name=droplet_name:
+remove-firewalls name="1-certificates":
     #!/usr/bin/env bash
     set -euo pipefail
 
@@ -97,11 +95,28 @@ remove-firewalls name=droplet_name:
     doctl compute firewall remove-droplets $CLOUDFLARE_FIREWALL_ID --droplet-ids $DROPLET_ID
 
 # ssh into droplet
-ssh name=droplet_name:
+ssh name="1-certificates":
     ssh $(doctl compute droplet get {{ name }} -o json | jq -r '.[].networks.v4[0].ip_address')
 
-sslscan host="httpbin.cflr.one" name=droplet_name:
+sslscan host="httpbin.cflr.one" name="1-certificates":
     sslscan --sni-name={{ host }} $(doctl compute droplet get {{ name }} -o json | jq -r '.[].networks.v4[0].ip_address')
 
-sslscan-direct host="httpbin-direct.cflr.one" name=droplet_name:
+sslscan-direct host="httpbin-direct.cflr.one" name="1-certificates":
     sslscan --sni-name={{ host }} $(doctl compute droplet get {{ name }} -o json | jq -r '.[].networks.v4[0].ip_address')
+
+sslscan-tunnel host="httpbin-tunnel.cflr.one":
+    sslscan {{ host }}
+
+#-----------------------------------------------------------
+# 2-tunnel
+#-----------------------------------------------------------
+lockdown-ingress name="2-tunnel":
+    #!/usr/bin/env bash
+    set -euo pipefail
+
+    echo "Setting Digital Ocean variables."
+    SSH_FIREWALL_ID=$(doctl compute firewall list -o json | jq -r '.[] | select(.name == "ssh-all").id')
+    DROPLET_ID=$(doctl compute droplet get {{ name }} -o json | jq -r '.[].id')
+
+    echo "Adding droplets to firewall(s)."
+    doctl compute firewall add-droplets $SSH_FIREWALL_ID --droplet-ids $DROPLET_ID
