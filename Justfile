@@ -27,6 +27,8 @@ alias cleanup := remove-env
 remove-env:
     echo "Removing .env file"
     rm .env
+    echo "Removing .tfvars file"
+    rm terraform.tfvars
 
 # display email DNS records
 show-dns domain:
