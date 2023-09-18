@@ -1,7 +1,7 @@
 {
   "openapi": "3.0.0",
   "info": { "title": "httpbin.org", "version": "1.0.0" },
-  "servers": [{ "url": "https://api.nz.cflr.win/" }],
+  "servers": [{ "url": "https://httpbin.cflr.one/" }],
   "paths": {
     "/absolute-redirect/{n}": {
       "get": {
