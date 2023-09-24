@@ -1,8 +1,8 @@
-httpbin.cflr.one {
+httpbin.${ZONE} {
 	tls /etc/caddy/cert.pem /etc/caddy/key.pem
 	reverse_proxy httpbin:80
 }
 
-httpbin-direct.cflr.one {
+httpbin-direct.${ZONE} {
 	reverse_proxy httpbin:80
 }

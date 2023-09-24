@@ -53,7 +53,9 @@ data "digitalocean_ssh_key" "this" {
 }
 
 locals {
-  caddyb64   = base64encode(file("Caddyfile"))
+  caddyb64 = base64encode(templatefile("Caddyfile", {
+    ZONE = var.cloudflare_zone
+  }))
   composeb64 = base64encode(file("docker-compose.yaml"))
   cert       = base64encode(cloudflare_origin_ca_certificate.origin.certificate)
   key        = base64encode(tls_private_key.this.private_key_pem)
