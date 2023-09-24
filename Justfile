@@ -8,8 +8,8 @@ alias cleanup := remove-env
 @fmt:
     just --fmt --unstable
 
-# load env and init tf
-@bootstrap: load-env tf-init
+# creates .env
+@bootstrap: load-env
 
 # set env vars from 1Password
 @load-env:
