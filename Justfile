@@ -27,8 +27,6 @@ alias cleanup := remove-env
 remove-env:
     echo "Removing .env file"
     rm .env
-    echo "Removing .tfvars file"
-    rm terraform.tfvars
 
 # display email DNS records
 show-dns domain:
@@ -41,9 +39,6 @@ show-zone zone_id:
 #-----------------------------------------------------------
 # Terraform
 #-----------------------------------------------------------
-
-set-tfvars:
-    op inject -i terraform/terraform.tfvars.example -o terraform/terraform.tfvars
 
 tf-init *args:
     terraform -chdir=terraform init {{ args }}

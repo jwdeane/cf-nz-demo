@@ -1,3 +1,0 @@
-MYSQL_ROOT_PASSWORD = "op://nz-demo-day/wp-mysql-root-password/password"
-MYSQL_USER          = "op://nz-demo-day/wp-mysql-user/username"
-MYSQL_PASSWORD      = "op://nz-demo-day/wp-mysql-user/password"
