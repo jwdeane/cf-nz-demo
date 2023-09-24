@@ -55,7 +55,7 @@ resource "cloudflare_logpull_retention" "this" {
 #-----------------------------------------------------------
 # 5-zt
 #-----------------------------------------------------------
-resource "cloudflare_teams_account" "cflr" {
+resource "cloudflare_teams_account" "this" {
   account_id           = var.cloudflare_account_id
   tls_decrypt_enabled  = true
   activity_log_enabled = true
@@ -98,6 +98,6 @@ resource "cloudflare_teams_account" "cflr" {
     footer_text      = "Mistakes were made, let's not mention this again."
     header_text      = "BLOCKED"
     logo_path        = var.block_page_logo_url
-    name             = "cflr"
+    name             = var.team_name
   }
 }

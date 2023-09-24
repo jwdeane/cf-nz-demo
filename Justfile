@@ -1,6 +1,8 @@
 alias init := bootstrap
 alias cleanup := remove-env
 
+zone := "cflr.one"
+
 @_default:
     just --list
 

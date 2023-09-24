@@ -56,7 +56,7 @@ locals {
   caddyb64   = base64encode(file("Caddyfile"))
   composeb64 = base64encode(file("docker-compose.yaml"))
   cert       = base64encode(cloudflare_origin_ca_certificate.origin.certificate)
-  key        = base64encode(tls_private_key.cflr.private_key_pem)
+  key        = base64encode(tls_private_key.this.private_key_pem)
   tunnel_composeb64 = base64encode(templatefile("tunnel-compose.yaml", {
     TUNNEL_TOKEN = cloudflare_tunnel.this.tunnel_token
   }))
@@ -97,17 +97,17 @@ resource "digitalocean_droplet" "this" {
 }
 
 # Origin Certificate
-resource "tls_private_key" "cflr" {
+resource "tls_private_key" "this" {
   algorithm   = "ECDSA"
   ecdsa_curve = "P256"
 }
 
-resource "tls_cert_request" "cflr" {
-  private_key_pem = tls_private_key.cflr.private_key_pem
+resource "tls_cert_request" "this" {
+  private_key_pem = tls_private_key.this.private_key_pem
 }
 
 resource "cloudflare_origin_ca_certificate" "origin" {
-  csr                = tls_cert_request.cflr.cert_request_pem
+  csr                = tls_cert_request.this.cert_request_pem
   hostnames          = ["httpbin.${var.cloudflare_zone}"]
   request_type       = "origin-ecc"
   requested_validity = 5475

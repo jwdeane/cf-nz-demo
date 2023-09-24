@@ -47,6 +47,9 @@ variable "droplet_name_tunnel" {
 #-----------------------------------------------------------
 # 5-zt
 #-----------------------------------------------------------
+variable "team_name" {
+  default = "cflr"
+}
 variable "block_page_logo_url" {
   default = "https://r2.jwdn.cc/jp-nedry.gif"
 }
