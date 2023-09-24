@@ -101,14 +101,32 @@ remove-firewalls name="1-certificates":
 ssh name="1-certificates":
     ssh $(doctl compute droplet get {{ name }} -o json | jq -r '.[].networks.v4[0].ip_address')
 
-sslscan host="httpbin.cflr.one" name="1-certificates":
-    sslscan --sni-name={{ host }} $(doctl compute droplet get {{ name }} -o json | jq -r '.[].networks.v4[0].ip_address')
+@sslscan name="1-certificates":
+    # remove the firewall temporarily
+    just remove-firewalls
 
-sslscan-direct host="httpbin-direct.cflr.one" name="1-certificates":
-    sslscan --sni-name={{ host }} $(doctl compute droplet get {{ name }} -o json | jq -r '.[].networks.v4[0].ip_address')
+    echo "Run sslscan against the droplets public IP."
+    echo "A Cloudflare Origin Certificate will be presented."
+    echo "NOTE: this will fail if the cfip firewall is in place.\n"
+    sslscan --sni-name=httpbin.{{ zone }} $(doctl compute droplet get {{ name }} -o json | jq -r '.[].networks.v4[0].ip_address')
 
-sslscan-tunnel host="httpbin-tunnel.cflr.one":
-    sslscan {{ host }}
+    # re-add the firewall
+    just add-cfip-firewall
+
+@sslscan-direct name="1-certificates":
+    # remove the firewall temporarily
+    just remove-firewalls
+
+    echo "Run sslscan against the droplets public IP, unproxied, bypassing Cloudflare."
+    echo "Once connected, a non-Cloudflare certificate (managed by Caddy) will be presented."
+    echo "NOTE: this will fail if the cfip firewall is in place.\n"
+    sslscan --sni-name=httpbin-direct.{{ zone }} $(doctl compute droplet get {{ name }} -o json | jq -r '.[].networks.v4[0].ip_address')
+
+    # re-add the firewall
+    just add-cfip-firewall
+
+sslscan-tunnel:
+    sslscan httpbin-tunnel.{{ zone }}
 
 #-----------------------------------------------------------
 # 2-tunnel
