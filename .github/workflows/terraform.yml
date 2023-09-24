@@ -21,6 +21,9 @@ env:
   CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
   CLOUDFLARE_ZONE_ID: ${{ secrets.CLOUDFLARE_ZONE_ID }}
   DIGITALOCEAN_TOKEN: ${{ secrets.DIGITALOCEAN_TOKEN }}
+  MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
+  MYSQL_USER: ${{ secrets.MYSQL_USER }}
+  MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
 
 defaults:
   run:
@@ -28,7 +31,7 @@ defaults:
 
 jobs:
   terraform-plan:
-    name: "Terraform Plan"
+    name: "Plan"
     runs-on: ubuntu-latest
     outputs:
       exitcode: ${{ steps.plan.outputs.exitcode }}
