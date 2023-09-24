@@ -64,7 +64,7 @@ jobs:
         if: github.event_name == 'pull_request'
         env:
           PLAN: "terraform\n${{ steps.plan.outputs.stdout }}"
-          EXITCODE: "terraform\n${{ steps.plan.outputs.exitcode }}"
+          EXITCODE: "${{ steps.plan.outputs.exitcode }}"
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
