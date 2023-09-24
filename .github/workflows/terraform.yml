@@ -57,16 +57,14 @@ jobs:
 
       - name: Terraform plan
         id: plan
-        run: |
-          export exitcode=0
-          terraform plan -detailed-exitcode -no-color || export exitcode=$?
-          echo "exitcode=$exitcode" >> $GITHUB_OUTPUT
+        run: terraform plan -detailed-exitcode -no-color
         continue-on-error: true
 
       - uses: actions/github-script@v6
         if: github.event_name == 'pull_request'
         env:
           PLAN: "terraform\n${{ steps.plan.outputs.stdout }}"
+          EXITCODE: "terraform\n${{ steps.plan.outputs.exitcode }}"
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -81,7 +79,7 @@ jobs:
 
             </details>
 
-            #### Terraform Plan 📖\`${{ steps.plan.outcome }} (${{ steps.plan.outputs.exitcode }})\`
+            #### Terraform Plan 📖\`${{ steps.plan.outcome }} (${process.env.EXITCODE})\`
 
             <details><summary>Show Plan</summary>
 
