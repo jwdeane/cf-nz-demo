@@ -6,7 +6,7 @@
 2. An active R2 subscription with a bucket named `tfstate` and an [R2 token generated](https://developers.cloudflare.com/r2/api/s3/tokens/).
 3. A Zero Trust subscription.
 4. A Digital Ocean (DO) account for compute.
-   - **Note**, DO can be swapped out for any compute platform (AWS, Azure, GCP, Raspberry Pi) by replacing [digitalocean.tf](./terraform/digitalocean.tf), updating [providers.tf](./terraform/,providers.tf), and updating any [variables.tf](./terraform/variables.tf).
+   - **Note**, DO can be swapped out for any compute platform (AWS, Azure, GCP, Raspberry Pi) by replacing [digitalocean.tf](./terraform/digitalocean.tf), updating [providers.tf](./terraform/providers.tf), and updating any [variables.tf](./terraform/variables.tf).
 
 ### Required Cloudflare Features
 
