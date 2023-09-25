@@ -1,3 +1,3 @@
 # NZ Demo 2023
 
-Host: `cflr.one`
+## ⚠️ WIP: switch to `publish` branch to see final configuration.
