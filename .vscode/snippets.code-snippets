@@ -1,0 +1,24 @@
+{
+  "Init R2 backend": {
+    "scope": "terraform",
+    "prefix": "cf:r2b",
+    "body": [
+      "backend \"s3\" {",
+      "\tbucket = \"${1:tfstate}\"",
+      "\tkey    = \"${2:account}/${3:path/goes/here}.tfstate\"",
+      "",
+      "\tregion                      = \"auto\"",
+      "\tskip_region_validation      = true",
+      "\tskip_metadata_api_check     = true",
+      "\tskip_credentials_validation = true",
+      "\tforce_path_style            = true",
+      "",
+      "\t# requires the following env vars:",
+      "\t# - AWS_S3_ENDPOINT",
+      "\t# - AWS_ACCESS_KEY_ID",
+      "\t# - AWS_SECRET_ACCESS_KEY",
+      "}$0"
+    ],
+    "description": "Use R2 as Terraform backend with environment variables"
+  }
+}

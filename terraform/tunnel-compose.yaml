@@ -1,0 +1,24 @@
+version: "3"
+services:
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    restart: always
+    container_name: cloudflared
+    command: tunnel --no-autoupdate run --token ${TUNNEL_TOKEN}
+    networks:
+      - tunnel
+
+  httpbin:
+    image: kong/httpbin
+    restart: always
+    container_name: httpbin
+    networks:
+      - tunnel
+
+networks:
+  tunnel:
+    name: tunnel
+    ipam:
+      config:
+        - subnet: 10.0.0.0/20
+          ip_range: 10.1.0.0/24
